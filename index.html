@@ -6,9 +6,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Program za obavljanje osnovnih aritmetičkih operacija</title> 
     <meta name="author" content="Biljana Ostojić">
+    <link href="style.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
- 
+   <div id="wrapper">
+        <h1>Program za obavljanje osnovnih aritmetičkih operacija</h1>
+        <hr />
+        <div class="group">
+            <label for="firstNumber" class="label">Prvi broj</label> 
+            <input type="text" id="firstNumber" class="control" placeholder="Unesite prvi broj" oninput="enforceNumber(this);">
+            <span class="error" id="error-firstNumber"></span>
+        </div>
+        <div class="group"> 
+            <label for="operations" class="label">Operator</label>
+            <select id="operations" class="control" onchange="changeSelectedValue(this);">
+                <option value="">Izaberite operator</option>
+              <option value="add">+</option>
+              <option value="sab">-</option>
+              <option value="mul">*</option>
+              <option value="div">/</option>
+            </select> 
+            <span class="error" id="error-operations"></span>
+        </div>
+        <div class="group"> 
+            <label for="secondNumber" class="label">Drugi broj</label> 
+            <input type="test" id="secondNumber" class="control" placeholder="Unesite drugi broj" oninput="enforceNumber(this);">
+            <span class="error" id="error-secondNumber"></span>
+        </div>
+        <div class="divBtn"> 
+            <button id="btnCalculate">Izračunaj</button>
+        </div>
+        
+        <div id="divResult">
+            <hr /> 
+            <label for="result" class="label">Rezultat</label> 
+            <input id="result" type="text" class="control">
+        </div>
+    </div>
+    
+    
+    <script>
+        toggleResult();
+        function toggleResult() {
+            var result = document.getElementById('result').value;
+            var div = document.getElementById('divResult');
+            if (result.length > 0) {
+                div.style.display = "block";
+            } 
+            else {
+                div.style.display = "none";
+            }
+        }
+        
+        document.getElementById("btnCalculate").addEventListener("click", function(e){
+            var a = document.getElementById('firstNumber').value.replace(',','.');
+            var b = document.getElementById('secondNumber').value.replace(',','.');
+            var o = document.getElementById('operations').value;  
+            if (!validateFields(a, b, o)) {
+                e.preventDefault();
+            }
+            else {
+                calculate(a, b, o);
+            }
+            });
+        function calculate(a, b, o)
+        {
+            var res;
+            if (o === "add") {
+                res = Number(a) + Number(b);
+                res = String(res).replace('.',',');
+                document.getElementById('result').value = res;
+            }
+            if (o === 'sab') {   
+                res = Number(a) - Number(b);
+                res = String(res).replace('.',',');
+                document.getElementById('result').value = res;
+            }
+            if (o === 'mul') { 
+                res = Number(a) * Number(b);
+                res = String(res).replace('.',',');
+                document.getElementById('result').value = res;
+            }  
+            if (o === 'div') {  
+                res = Number(a) / Number(b);
+                if (!isFinite(res)) {
+                    alert("Error. You can't devide by zero.");
+                } 
+                else {
+                    res = String(res).replace('.',',');
+                    document.getElementById('result').value = res;
+                }
+            }
+            toggleResult();
+        }
+        function validateFields(a, b, o) { 
+            var returnValue = true;
+            if (a.length < 1) {
+                returnValue = false;
+                document.getElementById('error-firstNumber').innerHTML = " * Prvi broj je obavezan.";
+            }
+            else{
+                document.getElementById('error-firstNumber').innerHTML = "";
+            }
+            if (b.length < 1) {
+                returnValue = false;
+                document.getElementById('error-secondNumber').innerHTML = " * Drugi broj je obavezan.";
+            }
+            else {
+               document.getElementById('error-secondNumber').innerHTML = "";
+            }
+            if (o.length < 1) {
+                returnValue = false;
+                document.getElementById('error-operations').innerHTML = " * Operator je obavezan.";
+            }
+            else {
+               document.getElementById('error-operations').innerHTML = "";
+            }
+            return returnValue;       
+        }
+        function validateInput(input) { 
+            var returnValue = true;
+            var val = input.value;
+            var inputId = input.getAttribute('id');
+                var label = document.getElementById(inputId).labels;
+            var labelText = (label[0].innerText || label[0].textContent);
+            if (val.length < 1) {
+                returnValue = false;
+                document.getElementById('error-' + inputId).innerHTML = " * " + labelText + " je obavezan.";
+            }
+            else{
+                document.getElementById('error-' + inputId).innerHTML = "";
+            }
+            return returnValue;       
+        }
+        function changeSelectedValue(select) {
+            document.getElementById('result').value = ""; 
+            toggleResult();
+            validateInput(select);
+        }
+        function enforceNumber(input) {
+            document.getElementById('result').value = "";
+            toggleResult();
+            validateInput(input);
+            var valid = /^\-?\d+\,\d*$|^\-?[\d]*$/;
+            var number = /\-\d+\,\d*|\-[\d]*|[\d]+\,[\d]*|[\d]+/;
+            if (!valid.test(input.value)) {
+                var n = input.value.match(number);
+                input.value = n ? n[0] : '';
+            }
+        }
+    </script>
 </body> 
 </html>
